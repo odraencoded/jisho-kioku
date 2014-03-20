@@ -1,10 +1,15 @@
 var recentKanji = undefined;
-var foundKanjiEl = document.getElementById("found_kanji");
+var kanjiResultsEl = document.querySelector("#radical_area > .results > .list");
 var recentKanjiEl = document.createElement("div");
 recentKanjiEl.id = "recent_kanji";
-foundKanjiEl.appendChild(recentKanjiEl);
 
-foundKanjiEl.addEventListener("beforecopy", function(e) {
+function attachRecentKanjiEl() {
+	kanjiResultsEl.appendChild(recentKanjiEl);
+}
+
+attachRecentKanjiEl();
+
+kanjiResultsEl.addEventListener("beforecopy", function(e) {
 	// Stores a recently copied kanji
 	var selection = window.getSelection().toString().trim();
 	if(selection.length == 1) {
@@ -15,7 +20,7 @@ foundKanjiEl.addEventListener("beforecopy", function(e) {
 	}
 });
 
-foundKanjiEl.addEventListener("click", function(e) {
+kanjiResultsEl.addEventListener("click", function(e) {
 	// Stores a recently clicked kanji
 	var el = e.toElement;
 	if(el.tagName == "A") {
@@ -35,15 +40,12 @@ function refreshRecentKanji() {
 	recentKanjiEl.setAttribute("data-recent-kanji-count", recentKanji.length);
 	
 	// heading html
-	html = '<h2>' + recentKanji.length + ' recently used kanji</h2>';
-	html += '<p class=\"clearfix\">';
-	
+	html = '<span class="result_label recent_label">' + recentKanji.length + '</span>';
 	// populate the kanji
 	for(var i = 0; i < recentKanji.length; i++) {
 		var kanjiOrd = recentKanji.charCodeAt(i);
-		html += '<a href="/kanji/details/&#' + kanjiOrd + ';">&#' + kanjiOrd + ';</a>'; 
+		html += '<a href="/search/&#' + kanjiOrd + ';" class="result">&#' + kanjiOrd + ';</a>'; 
 	}
-	html += '</p>';
 	recentKanjiEl.innerHTML = html;
 	
 	// Remove the .recent_kanij class and add it again
@@ -53,13 +55,13 @@ function refreshRecentKanji() {
 	}
 	refreshFoundKanji();
 	
-	ajaxObserver.observe(foundKanjiEl, {childList: true});
+	ajaxObserver.observe(kanjiResultsEl, {childList: true});
 }
 
 function refreshFoundKanji() {
 	// Adds a .recent_kanji class to the anchors in
 	// #found_kanji > #kanji_container created by jisho after the ajax query
-	var foundKanji = document.querySelectorAll("#found_kanji a");
+	var foundKanji = kanjiResultsEl.querySelectorAll("a");
 	for(var i = 0; i < foundKanji.length; i++) {
 		var kanji = foundKanji[i];
 		var value = recentKanji.indexOf(kanji.textContent.trim());
@@ -72,7 +74,7 @@ function refreshFoundKanji() {
 var ajaxObserver = new MutationObserver(function(mutations) {
 	// If the change removed #recent_kanji from the DOM, reatacch it
 	if(!recentKanjiEl.parentNode) {
-		foundKanjiEl.appendChild(recentKanjiEl);
+		attachRecentKanjiEl();
 	}
 	
 	refreshFoundKanji();

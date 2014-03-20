@@ -1,0 +1,10 @@
+.recent_label {
+	width: auto !important;
+	min-width: 38px !important;
+	padding: 0px 8px !important;
+	background: #56D926 !important;
+}
+
+.recent_kanji {
+	background: #CCFFBB !important;
+}

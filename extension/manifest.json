@@ -11,8 +11,12 @@
     "persistent": false
   },
   "content_scripts": [{
-      "matches": ["*://jisho.org/kanji/radicals/"],
-      "js": ["jisho-radicals.js"],
-	  "css": ["jisho-radicals.css"]
+    "matches": ["*://jisho.org/kanji/radicals/"],
+    "js": ["jisho-radicals.js"],
+    "css": ["jisho-radicals.css"]
+  }, {
+    "matches": ["*://beta.jisho.org/*"],
+    "js": ["beta-jisho.js"],
+    "css": ["beta-jisho.css"]
   }]
 }
