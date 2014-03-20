@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang=en>
+<meta charset=utf-8>
+<title>Jisho Memory Options</title>
+<link rel=stylesheet href="options.css">
+<h1>Jisho Memory Options</h1>
+<noscript>
+	<p>Why are you even trying to access this page <em>without</em> javascript?</p>
+</noscript>
+<form hidden>
+	<fieldset class="some-fields">
+		<label class="field">
+			Kanji Memory Limit:
+				<input name=recent-kanji-limit type=number min=0 max=10000>
+			<p class="field-tip">The maximum number of kanji to remember from radical input.</p>
+		</label>
+		<label class="field">
+			<input name=recent-kanji-copy type=checkbox min=0 max=10000>
+				Remember Copied Kanji
+			<p class="field-tip">In addition to kanji that has been clicked,
+				also remember kanji that has been copied to the clipboard.</p>
+		</label>
+	</fieldset>
+	<fieldset id=buttons>
+		<input type=submit accesskey=s value="Save">
+		<input type=reset accesskey=z value="Undo">
+		<input type=button name=to-defaults value="Defaults">
+	</fieldset>
+</form>
+<script src="options.js"></script>

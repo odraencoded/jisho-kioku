@@ -1,3 +1,7 @@
+var options = {
+	recentKanjiCopy: true
+}
+
 var recentKanji = undefined;
 var foundKanjiEl = document.getElementById("found_kanji");
 var recentKanjiEl = document.createElement("div");
@@ -6,11 +10,13 @@ foundKanjiEl.appendChild(recentKanjiEl);
 
 foundKanjiEl.addEventListener("beforecopy", function(e) {
 	// Stores a recently copied kanji
-	var selection = window.getSelection().toString().trim();
-	if(selection.length == 1) {
-		// '<kanji>' > '9' > ' '
-		if(selection > "9") {
-			storeKanji(selection);
+	if(options.recentKanjiCopy) {
+		var selection = window.getSelection().toString().trim();
+		if(selection.length == 1) {
+			// '<kanji>' > '9' > ' '
+			if(selection > "9") {
+				storeKanji(selection);
+			}
 		}
 	}
 });
@@ -80,17 +86,36 @@ var ajaxObserver = new MutationObserver(function(mutations) {
 
 chrome.storage.onChanged.addListener(function(changes, areaName) {
 	// Refreshes the #recent_kanji div when the stored recent kanji changes
-	if(areaName == "local" && changes.recentKanji) {
-		recentKanji = changes.recentKanji.newValue || "";
-		refreshRecentKanji();
+	if(areaName == "local") {
+		if(changes.recentKanji) {
+			recentKanji = changes.recentKanji.newValue || "";
+			refreshRecentKanji();
+		}
+		
+		for(var aKey in changes) {
+			if(aKey in options) {
+				newValue = changes[aKey].newValue;
+				if(newValue != undefined)
+					options[aKey] = newValue;
+			}
+		}
 	}
 });
 
-chrome.storage.local.get({recentKanji: ""}, function(data) {
-	// if recentKanji is not undefined, it's already been
-	// set by the chrome.storage.onChanged event handler
-	if(recentKanji == undefined) {
-		recentKanji = data.recentKanji;
-		refreshRecentKanji();
-	}
-});
+(function() {
+	var defaultData = {recentKanji: ""};
+	for(var aKey in options)
+		defaultData[aKey] = options[aKey];
+
+	chrome.storage.local.get(defaultData, function(data) {
+		// if recentKanji is not undefined, it's already been
+		// set by the chrome.storage.onChanged event handler
+		for(var aKey in options)
+			options[aKey] = data[aKey];
+		
+		if(recentKanji == undefined) {
+			recentKanji = data.recentKanji;
+			refreshRecentKanji();
+		}
+	});
+})();

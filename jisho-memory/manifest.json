@@ -3,6 +3,7 @@
   "manifest_version": 2,
   "version": "0.1",
   "description": "Extends Jisho.org",
+  "options_page": "options/options.html",
   "permissions": [
     "storage"
   ],
