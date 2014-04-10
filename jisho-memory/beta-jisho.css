@@ -2,9 +2,23 @@
 	width: auto !important;
 	min-width: 38px !important;
 	padding: 0px 8px !important;
-	background: #56D926 !important;
+	background: #56A936 !important;
 }
-
 .recent_kanji {
-	background: #CCFFBB !important;
+	padding: 1px 3px !important;
+	border: 1px solid rgba(0, 0, 0, .1);
+	background: #E4EDD9 !important;
+	color: #000 !important;
+}
+.little_recent.recent_kanji {
+	background: #DEEFC9 !important;
+}
+.kinda_recent.recent_kanji {
+	background: #D8F2B8 !important;
+}
+.very_recent.recent_kanji {
+	background: #D2F4A7 !important;
+}
+.most_recent.recent_kanji {
+	background: #C6F986 !important;
 }

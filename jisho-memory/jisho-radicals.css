@@ -1,1 +1,17 @@
-.recent_kanji { background: #C2FF81; }
+.recent_kanji {
+	background: rgba(255, 252, 123, .2);
+	border: 1px solid rgba(0, 0, 0, .2);
+	margin: 1px !important;
+}
+.little_recent.recent_kanji {
+	background: rgba(255, 252, 123, .3);
+}
+.kinda_recent.recent_kanji {
+	background: rgba(255, 252, 123, .4);
+}
+.very_recent.recent_kanji {
+	background: rgba(255, 252, 123, .5);
+}
+.most_recent.recent_kanji {
+	background: rgb(255, 252, 123);
+}

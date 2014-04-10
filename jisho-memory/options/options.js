@@ -1,5 +1,5 @@
 var defaultOptions = {
-	recentKanjiLimit: 200,
+	recentKanjiLimit: 600,
 	recentKanjiCopy: true
 };
 

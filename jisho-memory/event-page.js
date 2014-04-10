@@ -7,7 +7,7 @@ chrome.runtime.onMessage.addListener(
 			newRecentKanji = request.kanji + newRecentKanji;
 			if(newRecentKanji.length == 1) {
 				chrome.storage.local.get(
-					{recentKanji: "", recentKanjiLimit: 200}, function(data) {
+					{recentKanji: "", recentKanjiLimit: 600}, function(data) {
 						for(var i = 0; i < newRecentKanji.length; i++) {
 							data.recentKanji = data.recentKanji.replace(newRecentKanji[i], "");
 						}

@@ -71,6 +71,15 @@ function refreshFoundKanji() {
 		var value = recentKanji.indexOf(kanji.textContent.trim());
 		if(value != -1) {
 			kanji.classList.add("recent_kanji");
+			if(value == 0) {
+				kanji.classList.add("most_recent");
+			} else if(value < 5) {
+				kanji.classList.add("very_recent");
+			} else if(value < 25) {
+				kanji.classList.add("kinda_recent");
+			} else if(value < 60) {
+				kanji.classList.add("little_recent");
+			}
 		}
 	}
 }
