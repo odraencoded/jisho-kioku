@@ -1,8 +1,8 @@
 {
-  "name": "Jisho Extension",
+  "name": "Jisho Kioku",
   "manifest_version": 2,
   "version": "0.1",
-  "description": "Extends Jisho.org",
+  "description": "Remembers kanji looked up in Jisho.org",
   "options_page": "options/options.html",
   "permissions": [
     "storage"
