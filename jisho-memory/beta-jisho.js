@@ -2,7 +2,10 @@ var options = {
 	recentKanjiCopy: true
 }
 
+var RECENT_KANJI_CAP = 20;
 var recentKanji = undefined;
+var recentKanjiIndexes = [];
+var recentKanjiCount = 0;
 var kanjiResultsEl = document.querySelector("#radical_area > .results > .list");
 var recentKanjiEl = document.createElement("div");
 recentKanjiEl.id = "recent_kanji";
@@ -39,27 +42,35 @@ function storeKanji(kanji) {
 	chrome.runtime.sendMessage({type: "new-recent-kanji", kanji: kanji});
 }
 
+function getRecentKanjiClass(value) {
+	if(value == 0) {
+		return "most_recent";
+	} else if(value < 5) {
+		return "very_recent";
+	} else if(value < 25) {
+		return "kinda_recent";
+	} else if(value < 60) {
+		return "little_recent";
+	} else {
+		return "";
+	}
+}
+
 function refreshRecentKanji() {
 	// Creates the elements inside the extension's #recent_kanji div
 	ajaxObserver.disconnect();
 	
-	recentKanjiEl.setAttribute("data-recent-kanji-count", recentKanji.length);
-	
 	// heading html
-	html = '<span class="result_label recent_label">' + recentKanji.length + '</span>';
+	html = '<span class="result_label recent_label">' + recentKanjiCount + '</span>';
 	// populate the kanji
-	for(var i = 0; i < recentKanji.length; i++) {
-		var kanjiOrd = recentKanji.charCodeAt(i);
-		html += '<a href="/search/&#' + kanjiOrd + ';" class="result">&#' + kanjiOrd + ';</a>'; 
+	for(var i=0; i < recentKanjiIndexes.length; i++) {
+		var index = recentKanjiIndexes[i];
+		var kanjiOrd = recentKanji.charCodeAt(index);
+		html += '<a href="/search/&#' + kanjiOrd +
+		        ';" class="result recent_kanji ' + getRecentKanjiClass(index) +
+		        '">&#' + kanjiOrd + ';</a>'; 
 	}
 	recentKanjiEl.innerHTML = html;
-	
-	// Remove the .recent_kanij class and add it again
-	var recentFoundKanji = document.querySelectorAll(".recent_kanji");
-	for(var i = 0; i < recentFoundKanji.length; i++) {
-		recentFoundKanji[i].classList.remove("recent_kanji");
-	}
-	refreshFoundKanji();
 	
 	ajaxObserver.observe(kanjiResultsEl, {childList: true});
 }
@@ -67,23 +78,47 @@ function refreshRecentKanji() {
 function refreshFoundKanji() {
 	// Adds a .recent_kanji class to the anchors in
 	// #found_kanji > #kanji_container created by jisho after the ajax query
+	
+	// Remove the .recent_kanji class and add it again
+	recentKanjiEl.innerHTML = "";
+	var recentFoundKanji = document.querySelectorAll(".recent_kanji");
+	for(var i = 0; i < recentFoundKanji.length; i++) {
+		recentFoundKanji[i].classList.remove("recent_kanji");
+	}
+	
+	recentKanjiIndexes = [];
 	var foundKanji = kanjiResultsEl.querySelectorAll("a");
 	for(var i = 0; i < foundKanji.length; i++) {
-		var kanji = foundKanji[i];
-		var value = recentKanji.indexOf(kanji.textContent.trim());
+		var kanjiEl = foundKanji[i];
+		var kanji = kanjiEl.textContent.trim();
+		var value = recentKanji.indexOf(kanji);
+		
 		if(value != -1) {
-			kanji.classList.add("recent_kanji");
-			if(value == 0) {
-				kanji.classList.add("most_recent");
-			} else if(value < 5) {
-				kanji.classList.add("very_recent");
-			} else if(value < 25) {
-				kanji.classList.add("kinda_recent");
-			} else if(value < 60) {
-				kanji.classList.add("little_recent");
+			kanjiEl.classList.add("recent_kanji");
+			var recentnessClass = getRecentKanjiClass(value);
+			if(recentnessClass != "") {
+				kanjiEl.classList.add(recentnessClass);
 			}
+			
+			recentKanjiIndexes[recentKanjiIndexes.length] = value;
 		}
 	}
+	
+	if(foundKanji.length == 0) {
+		// There are no found kanji, display unfiltered recent kanji
+		recentKanjiCount = recentKanji.length;
+		for(var i=0; i<Math.min(recentKanji.length, RECENT_KANJI_CAP); i++) {
+			recentKanjiIndexes[recentKanjiIndexes.length] = i;
+		}
+	} else {
+		// If there are found kanji they wouldn't have been added
+		// from most recent to least recent order, this fixes that
+		recentKanjiCount = recentKanjiIndexes.length;
+		recentKanjiIndexes.sort(function(a, b) { return a - b; })
+		.slice(0, RECENT_KANJI_CAP); // Apply cap
+	}
+	
+	refreshRecentKanji();
 }
 
 var ajaxObserver = new MutationObserver(function(mutations) {
@@ -100,14 +135,15 @@ chrome.storage.onChanged.addListener(function(changes, areaName) {
 	if(areaName == "local") {
 		if(changes.recentKanji) {
 			recentKanji = changes.recentKanji.newValue || "";
-			refreshRecentKanji();
+			refreshFoundKanji();
 		}
 		
 		for(aKey in changes) {
 			if(aKey in options) {
 				newValue = changes[aKey].newValue;
-				if(newValue != undefined)
+				if(newValue != undefined) {
 					options[aKey] = newValue;
+				}
 			}
 		}
 	}
@@ -126,7 +162,7 @@ chrome.storage.onChanged.addListener(function(changes, areaName) {
 		
 		if(recentKanji == undefined) {
 			recentKanji = data.recentKanji;
-			refreshRecentKanji();
+			refreshFoundKanji();
 		}
 	});
 })();
