@@ -1,7 +1,7 @@
 {
   "name": "Jisho Kioku",
   "manifest_version": 2,
-  "version": "0.1",
+  "version": "0.2",
   "description": "Remembers kanji looked up in Jisho.org",
   "options_page": "options/options.html",
   "permissions": [
@@ -12,12 +12,12 @@
     "persistent": false
   },
   "content_scripts": [{
-    "matches": ["*://jisho.org/kanji/radicals/"],
-    "js": ["jisho-radicals.js"],
-    "css": ["jisho-radicals.css"]
+    "matches": ["*://classic.jisho.org/kanji/radicals/"],
+    "js": ["classic-jisho-kioku.js"],
+    "css": ["classic-jisho-kioku.css"]
   }, {
-    "matches": ["*://beta.jisho.org/*"],
-    "js": ["beta-jisho.js"],
-    "css": ["beta-jisho.css"]
+    "matches": ["*://beta.jisho.org/*", "*://jisho.org/*"],
+    "js": ["new-jisho-kioku.js"],
+    "css": ["new-jisho-kioku.css"]
   }]
 }
