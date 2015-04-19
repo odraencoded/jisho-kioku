@@ -26,5 +26,5 @@ It's the green stuff.
 4. Go to the extensions page
 5. Check the "Developer mode" checkbox or similar
 6. Click the "Load unpacked extension..." button or similar
-7. Select the directory where you unzipped this extension
+7. Select `<directory where you unzipped the thing>/jisho-kioku-master/jisho-kioku`
 8. Done. It's installed!
