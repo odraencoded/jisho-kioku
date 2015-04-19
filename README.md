@@ -7,6 +7,12 @@ Specially useful if you notice you look up the same kanji over and over, dumbfou
 
 ## In action
 
+[Video demonstration in Chrome](https://youtu.be/72nJWn-xQ7o)
+
+[![Video Demonstration](http://img.youtube.com/vi/72nJWn-xQ7o/0.jpg)](https://youtu.be/72nJWn-xQ7o)
+
+Screenshot in Opera
+
 ![Screenshot](http://i.imgur.com/YVn8HzB.png)
 
 It's the green stuff.
