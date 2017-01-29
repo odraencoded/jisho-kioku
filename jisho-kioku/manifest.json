@@ -1,11 +1,11 @@
 {
   "name": "Jisho Kioku",
   "manifest_version": 2,
-  "version": "0.2",
-  "description": "Remembers kanji looked up in Jisho.org",
+  "version": "0.3",
+  "description": "Remembers kanji looked up in Jisho.org and other stuff.",
   "options_page": "options/options.html",
   "permissions": [
-    "storage"
+    "storage", "unlimitedStorage"
   ],
   "background": {
     "scripts": ["event-page.js"],
@@ -17,7 +17,16 @@
     "css": ["classic-jisho-kioku.css"]
   }, {
     "matches": ["*://beta.jisho.org/*", "*://jisho.org/*"],
-    "js": ["new-jisho-kioku.js"],
-    "css": ["new-jisho-kioku.css"]
+    "js": [
+      "kioku-data.js",
+      "kana-table.js",
+      "radical-table.js",
+      "new-jisho-radicals.js",
+      "new-jisho-search.js",
+      "new-jisho-kanji.js",
+      "new-jisho-deck.js",
+      "new-jisho-kioku.js"
+    ],
+    "css": ["new-jisho-kioku.css", "new-jisho-radicals.css"]
   }]
 }

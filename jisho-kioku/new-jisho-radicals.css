@@ -1,0 +1,14 @@
+#radical-filter-label {
+    padding-left: 8px;
+    display: inline-block;
+    width: 50px;
+    font-size: .8em;
+    line-height: 1.1em;
+    vertical-align: middle;
+    margin-right: .1em;
+}
+
+#radical-filter {
+	display: inline;
+	width: auto;
+}

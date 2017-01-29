@@ -1,3 +1,15 @@
+#recent_kanji {
+    min-height: 0;
+    
+    /* margin-top: -28px; */
+    margin-bottom: 10px;
+}
+
+/* Hide jisho.org instructions */
+#radical_area .instructions {
+    display: none;
+}
+
 .recent_label {
 	width: auto !important;
 	min-width: 38px !important;
@@ -21,4 +33,117 @@
 }
 .most_recent.recent_kanji {
 	background: #C6F986 !important;
+}
+
+
+.kioku-submenu-container {
+    margin-left: -10px;
+}
+
+.kioku-submenu-container > a {
+    display: inline-block;
+    margin: 5px 0 5px 10px;
+    font-size: .8em;
+    line-height: 1.2em;
+}
+
+.kioku-bookmarks-list,
+.kioku-bookmarks-list > li {
+    list-style: none;
+    padding: 0; 
+    margin: 0;
+}
+.kioku-bookmarks-list {
+    margin: 0 0 20px 0;
+}
+.kioku-bookmarks-list > li {
+    margin-bottom: 10px;
+}
+.kioku-bookmarks-list > li::after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.kioku-bookmark-meanings {
+    line-height: 1.2em;
+    font-size: .9em;
+}
+
+.kioku-bookmark-meanings,
+.kioku-bookmark-meanings > li {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: inline;
+}
+
+.kioku-bookmark-meanings > li + li::before {
+    content: ' ';
+}
+
+.kioku-bookmark-meanings > .-kioku-meaning + .-kioku-meaning::before {
+    content: ' / ';
+}
+
+.kioku-bookmark-meanings > .-kioku-tag {
+    color: #aaa;
+    font-size: .7em;
+}
+
+.kioku-bookmarks-hide-furigana .kioku-bookmark-furigana,
+.kioku-bookmarks-hide-furigana rt {
+    display: none;
+}
+.kioku-bookmark-vocab-ruby, 
+.kioku-bookmark-rubyless-vocab > a {
+    font-size: 1.2em;
+    line-height: 1.2em;
+}
+.kioku-bookmark-vocab-ruby > a, 
+.kioku-bookmark-rubyless-vocab > a {
+    text-decoration: none;
+}
+
+.kioku-bookmark-vocab-ruby {
+    font-size: 1.5em;
+    line-height: 1.2em;
+    float: left;
+    margin-right: .2em;
+    clear: left;
+}
+
+
+.kioku-bookmarks-hide-meanings .kioku-bookmark-vocab-ruby,
+.kioku-bookmarks-hide-meanings .kioku-bookmark-meanings { display: none; }
+
+.kioku-bookmarks-show-meanings .kioku-bookmark-rubyless-vocab { display: none; }
+
+
+.kioku-bookmark-furigana { font-size: .8em; }
+.kioku-bookmark-furigana::before { content: ' ('; }
+.kioku-bookmark-furigana::after { content: ')'; }
+
+.kioku-bookmarks-options label {
+    display: inline;
+}
+
+.kioku-bookmark-remove {
+    float: right;
+    margin-left: 15px;
+    margin-top: 2px;
+    font-size: .9em;
+    line-height: 1.2em;
+}
+
+.kioku-bookmarks-show-meanings.kioku-bookmarks-show-furigana .kioku-bookmark-remove {
+    /* compensating for ruby text */
+    margin-top: 8px;
+}
+.kioku-bookmarks-hide-meanings .kioku-bookmark-remove {
+    display: none;
+}
+
+.kioku-bookmarks-list > li:hover {
+    color: #c00;
 }

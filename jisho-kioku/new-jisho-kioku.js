@@ -1,168 +1,245 @@
+var SEARCH_URL = '/search/';
+
 var options = {
-	recentKanjiCopy: true
+    recentKanjiCopy: true,
+    bookmarksShowMeanings: true,
+    bookmarksShowFurigana: true
 }
 
-var RECENT_KANJI_CAP = 20;
-var recentKanji = undefined;
-var recentKanjiIndexes = [];
-var recentKanjiCount = 0;
-var kanjiResultsEl = document.querySelector("#radical_area > .results > .list");
-var recentKanjiEl = document.createElement("div");
-recentKanjiEl.id = "recent_kanji";
 
-function attachRecentKanjiEl() {
-	kanjiResultsEl.appendChild(recentKanjiEl);
-}
+InitRadicalEnhacements();
+InitKanjiKioku();
+InitDeckKioku();
 
-attachRecentKanjiEl();
+// Load defaults
+loadDefaultData();
 
-kanjiResultsEl.addEventListener("beforecopy", function(e) {
-	// Stores a recently copied kanji
-	if(options.recentKanjiCopy) {
-		var selection = window.getSelection().toString().trim();
-		if(selection.length == 1) {
-			// '<kanji>' > '9' > ' '
-			if(selection > "9") {
-				storeKanji(selection);
-			}
-		}
-	}
+// Create kioku menu
+createMenu();
+
+// Records what's been searched for in this page.
+RecordPageSearch();
+
+
+AddOnDataChangedListener(function(changes) {
+    OnChangedKanjiData(changes);
+    OnChangedSearchData(changes);
+    OnChangedBookmarksData(changes);
+    
+    for(aKey in changes) {
+        if(aKey in options) {
+            newValue = changes[aKey].newValue;
+            if(newValue != undefined) {
+                options[aKey] = newValue;
+            }
+        }
+    }
 });
 
-kanjiResultsEl.addEventListener("click", function(e) {
-	// Stores a recently clicked kanji
-	var el = e.toElement;
-	if(el.tagName == "A") {
-		storeKanji(el.textContent.trim());
-	}
-});
-
-function storeKanji(kanji) {
-	// Adds "kanji" to the start of the recentKanji string
-	chrome.runtime.sendMessage({type: "new-recent-kanji", kanji: kanji});
+function loadDefaultData() {
+    var defaultData = {
+        recentKanji: "",
+        recentQueries: []
+    };
+    
+    for(aKey in options) {
+        defaultData[aKey] = options[aKey];
+    }
+    
+    GetDefaultData(defaultData, function(data) {
+        for(aKey in options)
+            options[aKey] = data[aKey];
+        
+        LoadDefaultKanjiData(data);
+        LoadDefaultSearchData(data);
+    });
 }
 
-function getRecentKanjiClass(value) {
-	if(value == 0) {
-		return "most_recent";
-	} else if(value < 5) {
-		return "very_recent";
-	} else if(value < 25) {
-		return "kinda_recent";
-	} else if(value < 60) {
-		return "little_recent";
-	} else {
-		return "";
-	}
+function createMenu() {
+    // Trying to figure out where to put the menu
+    var jishoHookEl = undefined;
+    if(window.location.pathname.startsWith(SEARCH_URL)) {
+        jishoHookEl = document.getElementById('primary');
+    } else if(window.location.pathname == '/') {
+        jishoHookEl = document.getElementById('page_container');
+    }
+    
+    if(!jishoHookEl) {
+        // welp, nowhere to put it, might as well give up.
+        return;
+    }
+    
+    var menuContainer = document.createElement('div');
+    var topLink = document.createElement('a');
+    topLink.innerText = '記憶';
+    topLink.href = '#';
+    menuContainer.appendChild(topLink);
+    
+    jishoHookEl.insertBefore(menuContainer,  jishoHookEl.firstChild);
+    
+    var submenu = undefined;
+    var searchesDiv = undefined;
+    var bookmarksDiv = undefined;
+    
+    topLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        createSubMenu();
+        if(submenu.hasAttribute('hidden')) {
+            submenu.removeAttribute('hidden');
+        } else {
+            submenu.setAttribute('hidden', 'hidden');
+        }
+        
+        return false;
+    });
+
+    function createSubMenu() {
+        if(submenu){
+            return;
+        }
+        submenu = document.createElement('div');
+        submenu.className = 'kioku-submenu-container';
+        submenu.setAttribute('hidden', 'hidden');
+        menuContainer.appendChild(submenu);
+        
+        
+        var searchesTabLoaded = false;
+        var bookmarksTabLoaded = false;
+        
+        var bookmarksLink = document.createElement('a');
+        var searchesLink = document.createElement('a');
+        
+        searchesLink.innerText = 'Searches';
+        searchesLink.href = '#';
+        submenu.appendChild(searchesLink);
+        
+        bookmarksLink.innerText = 'Bookmarks';
+        bookmarksLink.href = '#';
+        submenu.appendChild(bookmarksLink);
+        
+        // Create tabs
+        searchesDiv = document.createElement('div');
+        searchesDiv.setAttribute('data-name', 'searches')
+        menuContainer.appendChild(searchesDiv);
+        
+        bookmarksDiv = document.createElement('div');
+        bookmarksDiv.setAttribute('data-name', 'bookmarks')
+        menuContainer.appendChild(bookmarksDiv);
+        
+        // Link tab links
+        makeKiokuTabLink(searchesLink, searchesDiv);
+        makeKiokuTabLink(bookmarksLink, bookmarksDiv);
+        
+        // Show default tab
+        showKiokuTab(searchesDiv);
+        
+        function makeKiokuTabLink(tabLink, tab) {
+            tabLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                showKiokuTab(tab);
+                return false;
+            });
+        }
+        
+        function showKiokuTab(shownTab) {
+            searchesDiv.setAttribute('hidden', 'hidden');
+            bookmarksDiv.setAttribute('hidden', 'hidden');
+            shownTab.removeAttribute('hidden');
+            var tabName = shownTab.getAttribute('data-name');
+            if(tabName == 'searches') {
+                initSearchesTab();
+            } else if(tabName == 'bookmarks') {
+                initBookmarksTab();
+            }
+        }
+        
+        function initSearchesTab() {
+            if(searchesTabLoaded) {
+                return;
+            }
+            
+            var title = document.createElement('b');
+            title.innerText = 'Recent Searches';
+            searchesDiv.appendChild(title);
+            var mainDiv = document.createElement('div');
+            searchesDiv.appendChild(mainDiv);
+            SetupBrowseSearchesDiv(mainDiv);
+            
+            searchesTabLoaded = true;
+        }
+        
+        function initBookmarksTab() {
+            if(bookmarksTabLoaded) {
+                return;
+            }
+            
+            var title = document.createElement('b');
+            title.innerText = 'Bookmarked Vocabulary';
+            bookmarksDiv.appendChild(title);
+            
+            var optionsDiv = document.createElement('div');
+            bookmarksDiv.appendChild(optionsDiv);
+            optionsDiv.innerHTML = (
+                '<label>'
+                    +'<input type="checkbox" id="kioku-bookmarks-show-furigana">'
+                    + ' furigana'
+                + '</label>'
+                + ' '
+                + '<label>'
+                    +'<input type="checkbox" id="kioku-bookmarks-show-meanings">'
+                    + ' meanings'
+                + '</label>'
+            );
+            optionsDiv.className = 'kioku-bookmarks-options';
+            
+            var showFurigana = document.getElementById('kioku-bookmarks-show-furigana');
+            var showMeanings = document.getElementById('kioku-bookmarks-show-meanings');
+            
+            showFurigana.checked = options.bookmarksShowFurigana;
+            showMeanings.checked = options.bookmarksShowMeanings;
+            
+            
+            var mainDiv = document.createElement('div');
+            bookmarksDiv.appendChild(mainDiv);
+            SetupBrowseBookmarksDiv(mainDiv);
+            
+            refreshBookmarkDivClasses();
+            
+            showFurigana.addEventListener('change', changedBookmarkSettings);
+            showMeanings.addEventListener('change', changedBookmarkSettings);
+            
+            function changedBookmarkSettings() {
+                options.bookmarksShowFurigana = showFurigana.checked;
+                options.bookmarksShowMeanings = showMeanings.checked;
+                
+                SaveOptionsData({
+                    bookmarksShowFurigana: showFurigana.checked,
+                    bookmarksShowMeanings: showMeanings.checked
+                });
+                
+                refreshBookmarkDivClasses();
+            }
+            
+            function refreshBookmarkDivClasses() {
+                var className = '';
+                if(showFurigana.checked) {
+                    className += ' kioku-bookmarks-show-furigana';
+                } else {
+                    className += ' kioku-bookmarks-hide-furigana';
+                }
+                
+                if(showMeanings.checked) {
+                    className += ' kioku-bookmarks-show-meanings';
+                } else {
+                    className += ' kioku-bookmarks-hide-meanings';
+                }
+                
+                mainDiv.className = className;
+            }
+            
+            
+            bookmarksTabLoaded = true;
+        }
+    }
 }
-
-function refreshRecentKanji() {
-	// Creates the elements inside the extension's #recent_kanji div
-	ajaxObserver.disconnect();
-	
-	// heading html
-	html = '<span class="result_label recent_label">' + recentKanjiCount + '</span>';
-	// populate the kanji
-	for(var i=0; i < recentKanjiIndexes.length; i++) {
-		var index = recentKanjiIndexes[i];
-		var kanjiOrd = recentKanji.charCodeAt(index);
-		html += '<a href="/search/&#' + kanjiOrd +
-		        ';" class="result recent_kanji ' + getRecentKanjiClass(index) +
-		        '">&#' + kanjiOrd + ';</a>'; 
-	}
-	recentKanjiEl.innerHTML = html;
-	
-	ajaxObserver.observe(kanjiResultsEl, {childList: true});
-}
-
-function refreshFoundKanji() {
-	// Adds a .recent_kanji class to the anchors in
-	// #found_kanji > #kanji_container created by jisho after the ajax query
-	
-	// Remove the .recent_kanji class and add it again
-	recentKanjiEl.innerHTML = "";
-	var recentFoundKanji = document.querySelectorAll(".recent_kanji");
-	for(var i = 0; i < recentFoundKanji.length; i++) {
-		recentFoundKanji[i].classList.remove("recent_kanji");
-	}
-	
-	recentKanjiIndexes = [];
-	var foundKanji = kanjiResultsEl.querySelectorAll("a");
-	for(var i = 0; i < foundKanji.length; i++) {
-		var kanjiEl = foundKanji[i];
-		var kanji = kanjiEl.textContent.trim();
-		var value = recentKanji.indexOf(kanji);
-		
-		if(value != -1) {
-			kanjiEl.classList.add("recent_kanji");
-			var recentnessClass = getRecentKanjiClass(value);
-			if(recentnessClass != "") {
-				kanjiEl.classList.add(recentnessClass);
-			}
-			
-			recentKanjiIndexes[recentKanjiIndexes.length] = value;
-		}
-	}
-	
-	if(foundKanji.length == 0) {
-		// There are no found kanji, display unfiltered recent kanji
-		recentKanjiCount = recentKanji.length;
-		for(var i=0; i<Math.min(recentKanji.length, RECENT_KANJI_CAP); i++) {
-			recentKanjiIndexes[recentKanjiIndexes.length] = i;
-		}
-	} else {
-		// If there are found kanji they wouldn't have been added
-		// from most recent to least recent order, this fixes that
-		recentKanjiCount = recentKanjiIndexes.length;
-		recentKanjiIndexes.sort(function(a, b) { return a - b; })
-		.slice(0, RECENT_KANJI_CAP); // Apply cap
-	}
-	
-	refreshRecentKanji();
-}
-
-var ajaxObserver = new MutationObserver(function(mutations) {
-	// If the change removed #recent_kanji from the DOM, reatacch it
-	if(!recentKanjiEl.parentNode) {
-		attachRecentKanjiEl();
-	}
-	
-	refreshFoundKanji();
-});
-
-chrome.storage.onChanged.addListener(function(changes, areaName) {
-	// Refreshes the #recent_kanji div when the stored recent kanji changes
-	if(areaName == "local") {
-		if(changes.recentKanji) {
-			recentKanji = changes.recentKanji.newValue || "";
-			refreshFoundKanji();
-		}
-		
-		for(aKey in changes) {
-			if(aKey in options) {
-				newValue = changes[aKey].newValue;
-				if(newValue != undefined) {
-					options[aKey] = newValue;
-				}
-			}
-		}
-	}
-});
-
-(function() {
-	var defaultData = {recentKanji: ""};
-	for(aKey in options)
-		defaultData[aKey] = options[aKey];
-		
-	chrome.storage.local.get(defaultData, function(data) {
-		// if recentKanji is not undefined, it's already been
-		// set by the chrome.storage.onChanged event handler
-		for(aKey in options)
-			options[aKey] = data[aKey];
-		
-		if(recentKanji == undefined) {
-			recentKanji = data.recentKanji;
-			refreshFoundKanji();
-		}
-	});
-})();
