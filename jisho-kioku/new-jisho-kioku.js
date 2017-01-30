@@ -1,4 +1,5 @@
 var SEARCH_URL = '/search/';
+var SEARCH_PREFIX = '/search';
 
 var options = {
     recentKanjiCopy: true,
@@ -58,7 +59,7 @@ function loadDefaultData() {
 function createMenu() {
     // Trying to figure out where to put the menu
     var jishoHookEl = undefined;
-    if(window.location.pathname.startsWith(SEARCH_URL)) {
+    if(window.location.pathname.startsWith(SEARCH_PREFIX)) {
         jishoHookEl = document.getElementById('primary');
     } else if(window.location.pathname == '/') {
         jishoHookEl = document.getElementById('page_container');

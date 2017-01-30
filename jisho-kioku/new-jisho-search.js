@@ -95,11 +95,18 @@
     RecordPageSearch = function() {
         var pathName = window.location.pathname;
         
-        if(!pathName.startsWith(SEARCH_URL)) {
+        if(!pathName.startsWith(SEARCH_PREFIX)) {
             return;
         }
         
+        // Try to get the query from the URL
         var query = decodeURI(pathName.substr(SEARCH_URL.length));
+        if(query.length == 0) {
+            // Failing the try to get it from the searchBox
+            var query = searchBox.value;
+        }
+        
+        // Failing that just give up I mean what else can I even do?
         if(query.length == 0) {
             return;
         }
