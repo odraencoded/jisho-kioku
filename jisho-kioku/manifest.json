@@ -1,7 +1,7 @@
 {
   "name": "Jisho Kioku",
   "manifest_version": 2,
-  "version": "0.3",
+  "version": "0.3.1",
   "description": "Remembers kanji looked up in Jisho.org and other stuff.",
   "options_page": "options/options.html",
   "permissions": [

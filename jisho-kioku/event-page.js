@@ -10,6 +10,8 @@ chrome.runtime.onMessage.addListener(
             recordNewBookmark(request, sender, sendResponse);
         } else if(request.type == 'delete-bookmark') {
             deleteBookmark(request, sender, sendResponse);
+        } else if(request.type == 'delete-query') {
+            deleteQuery(request, sender, sendResponse);
         }
     }
 );
@@ -46,7 +48,7 @@ function recordNewQuery(request, sender, sendResponse) {
             var i = data.recentQueries.indexOf(request.query);
             while(i !== -1) {
                 data.recentQueries.splice(i, 1);
-                i = data.recentQueries.indexOf(request.query);
+                i = data.recentQueries.indexOf(request.query, i);
             }
             
             data.recentQueries.splice(0, 0, request.query);
@@ -55,6 +57,18 @@ function recordNewQuery(request, sender, sendResponse) {
                 data.recentQueries.splice(data.recentQueries.length - remainder, remainder)
             }
             
+            chrome.storage.local.set(data);
+        }
+    );
+}
+
+function deleteQuery(request, sender, sendResponse) {
+    chrome.storage.local.get(
+        { recentQueries: [] }, function(data) {
+            // Make sure we are deleting the right one.
+            if(data.recentQueries[request.index] == request.query) {
+                data.recentQueries.splice(request.index, 1)
+            }
             chrome.storage.local.set(data);
         }
     );

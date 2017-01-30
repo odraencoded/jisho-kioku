@@ -144,6 +144,19 @@
     display: none;
 }
 
-.kioku-bookmarks-list > li:hover {
+.kioku-bookmarks-list > li:hover,
+.kioku-searches-list > li:hover {
     color: #c00;
+}
+
+.kioku-searches-list {
+    min-width: 200px;
+    display: inline-block;
+}
+
+.kioku-remove-query {
+    font-size: .8em;
+    margin-left: 20px;
+    float: right;
+    display: block;
 }

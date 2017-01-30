@@ -31,6 +31,10 @@ function StoreQueryData(query) {
     chrome.runtime.sendMessage({type: "new-query", query: query});
 }
 
+function DeleteQueryData(index, query) {
+    chrome.runtime.sendMessage({type: "delete-query", index: index, query: query});
+}
+
 function GetBookmarkData(callback) {
     chrome.storage.local.get({ bookmarks: {} }, callback);
 }
