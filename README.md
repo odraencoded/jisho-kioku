@@ -1,11 +1,13 @@
 Jisho Kioku
 ===========
 
-A chromium extension for [Jisho.org](http://jisho.org). It remembers kanji looked up through the radical search and hightlights them.
+A chromium extension for [Jisho.org](http://jisho.org). It remembers kanji looked up through the radical search, hightlights them and does a lot of other stuff.
 
-Specially useful if you notice you look up the same kanji over and over, dumbfounded because you can't ever remember its reading.
+See manual/features/instructions at [Japanese with Anime](http://www.japanesewithanime.com/2017/01/jisho-kioku-extension.html)
 
 ## In action
+
+(old footage, see link above for current screenshots)
 
 [Video demonstration in Chrome](https://youtu.be/72nJWn-xQ7o)
 
