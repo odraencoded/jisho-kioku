@@ -5,7 +5,20 @@
     InitRadicalEnhacements = function() {
         assignRadicalNames();
         createRadicalFilterForm();
-
+        
+        // reset when a radical is clicked
+        for(var i = 0; i < radicalEls.length; i++) {
+            radicalEls[i].addEventListener('click', function() {
+                // refocus
+                if(radicalFilterInputEl.value != '') {
+                    radicalFilterInputEl.focus();
+                }
+                radicalFilterInputEl.value = "";
+                ResetRadicalFilter();
+                
+            });
+        }
+        
         // Cause the first radical to be "click"'d on when the filter form is submitted.
         radicalFilterForm.addEventListener('submit', function(e) {
             if(firstRelevantRadical !== null) {
@@ -15,8 +28,6 @@
                     'cancelable': true
                 });
                 firstRelevantRadical.dispatchEvent(clickEvent);
-                radicalFilterInputEl.value = "";
-                ResetRadicalFilter();
             }
             
             e.preventDefault();
