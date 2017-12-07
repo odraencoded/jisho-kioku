@@ -17,7 +17,7 @@
     "persistent": false
   },
   "content_scripts": [{
-    "matches": ["*://classic.jisho.org/kanji/radicals/"],
+    "matches": ["*://classic.jisho.org/kanji/radicals"],
     "js": ["classic-jisho-kioku.js"],
     "css": ["classic-jisho-kioku.css"]
   }, {
