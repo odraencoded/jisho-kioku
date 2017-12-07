@@ -143,7 +143,7 @@
             var link = document.createElement('a');
             
             // Holy Javascripting Christ, Batman!
-            // who the fuck thought this kind of markup was a good idea?!
+            // who the heck thought this kind of markup was a good idea?!
             for(j = 0; j < bookmark.vocab.length; j++) {
                 var furigana = bookmark.furigana[j];
                 var maybeKanji = bookmark.vocab.charAt(j);
