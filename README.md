@@ -5,6 +5,10 @@ A chromium extension for [Jisho.org](http://jisho.org). It remembers kanji looke
 
 See manual/features/instructions at [Japanese with Anime](http://www.japanesewithanime.com/2017/01/jisho-kioku-extension.html)
 
+## Addon pages
+
+https://addons.mozilla.org/en-US/firefox/addon/jisho-kioku/
+
 ## In action
 
 (old footage, see link above for current screenshots)
@@ -22,6 +26,15 @@ It's the green stuff.
 
 ## Install Instructions
 
+### Firefox
+
+1. Get [Firefox](https://www.mozilla.org/firefox/)
+2. Go to [Jisho Kioku Firefox addon page](https://addons.mozilla.org/en-US/firefox/addon/jisho-kioku/)
+3. Click Add to Firefox
+4. ばんざい！
+
+### Chromium Browsers
+
 1. [Download the whole thing](https://github.com/odraencoded/jisho-kioku/archive/master.zip)
 2. Unzip in some directory somewhere
 3. Open your preferred chromium based browser such as [Chrome](http://www.google.com/chrome) or [Opera](http://opera.com)
@@ -30,3 +43,7 @@ It's the green stuff.
 6. Click the "Load unpacked extension..." button or similar
 7. Select `<directory where you unzipped the thing>/jisho-kioku-master/jisho-kioku`
 8. Done. It's installed!
+
+### Other Browsers
+
+1. Reconsider your browser choices.
