@@ -63,7 +63,7 @@
         document.body.appendChild(scriptEl);
         
         window.addEventListener("message", function(e) {
-            if (event.data.type == "j-ex-character-chosen-in") {
+            if (e.data.type == "j-ex-character-chosen-in") {
                 StoreKanjiData(e.data.character);
             }
         });
@@ -72,7 +72,7 @@
             var $kanjiResults = $("#radical_area .results > .list");
             
             window.addEventListener("message", function(e) {
-                if (event.data.type == "j-ex-character-chosen-out") {
+                if (e.data.type == "j-ex-character-chosen-out") {
                     $kanjiResults.trigger("character_chosen", e.data.character);
                 }
             });
