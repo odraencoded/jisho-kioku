@@ -144,23 +144,31 @@
             
             // Holy Javascripting Christ, Batman!
             // who the fuck thought this kind of markup was a good idea?!
-            var linkHtml = '';
-            
             for(j = 0; j < bookmark.vocab.length; j++) {
                 var furigana = bookmark.furigana[j];
                 var maybeKanji = bookmark.vocab.charAt(j);
                 if(furigana.length == 0) {
-                    linkHtml += maybeKanji;
-                } else {
-                    linkHtml += (
-                        '<ruby>' + maybeKanji
-                            + '<rt>' + furigana + '</rt>'
-                        + '</ruby>'
+                    // creating text elements instead of using innerHTML
+                    // coz firefox addons no likey setting innerHTML :(
+                    link.appendChild(
+                        document.createTextNode(maybeKanji)
                     );
+                } else {
+                    // same
+                    var linkRuby = document.createElement('ruby');
+                    linkRuby.appendChild(
+                        document.createTextNode(maybeKanji)
+                    );
+                    var linkRubyRt = document.createElement('rt');
+                    linkRubyRt.appendChild(
+                        document.createTextNode(furigana)
+                    );
+                    // can I just say how tiring creating elements like this is?
+                    linkRuby.appendChild(linkRubyRt);
+                    link.appendChild(linkRuby);
                 }
             }
             
-            link.innerHTML = linkHtml;
             link.href = SEARCH_URL + encodeURI(bookmark.vocab);
             
             var linkContainer = document.createElement('span');

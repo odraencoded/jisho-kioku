@@ -26,7 +26,7 @@ foundKanjiEl.addEventListener("beforecopy", function(e) {
 
 foundKanjiEl.addEventListener("click", function(e) {
 	// Stores a recently clicked kanji
-	var el = e.toElement;
+	var el = e.toElement || e.target;
 	if(el.tagName == "A") {
 		storeKanji(el.textContent.trim());
 	}
@@ -55,20 +55,38 @@ function refreshRecentKanji() {
 	// Creates the elements inside the extension's #recent_kanji div
 	ajaxObserver.disconnect();
 	
+    while (recentKanjiEl.hasChildNodes()) {
+        recentKanjiEl.removeChild(recentKanjiEl.firstChild);
+    }
+    
 	// heading html
-	html = '<h2>' + recentKanjiCount + ' recently used kanji</h2>';
-	html += '<p class=\"clearfix\">';
+    var notInnerHtml = document.createElement('h2');
+    notInnerHtml.appendChild(
+        document.createTextNode(recentKanjiCount)
+    );
+    notInnerHtml.appendChild(
+        document.createTextNode(' recently used kanji')
+    );
+    recentKanjiEl.appendChild(notInnerHtml);
+    
+    notInnerHtml = document.createElement('p');
+    notInnerHtml.className = 'clearfix';
 	
 	// populate the kanji
 	for(var i = 0; i < recentKanjiIndexes.length; i++) {
 		var index = recentKanjiIndexes[i];
 		var kanjiOrd = recentKanji.charCodeAt(index);
-		html += '<a href="/kanji/details/&#' + kanjiOrd + 
-		        ';" class="result recent_kanji ' + getRecentKanjiClass(index) +
-		        '">&#' + kanjiOrd + ';</a>'; 
+        
+        var notInnerHtml2 = document.createElement('a');
+        notInnerHtml2.href = '/kanji/details/&#' + kanjiOrd + ';';
+        notInnerHtml2.className = 'result recent_kanji '  + getRecentKanjiClass(index);
+        notInnerHtml2.appendChild(
+            document.createTextNode(String.fromCharCode(kanjiOrd))
+        );
+        notInnerHtml.appendChild(notInnerHtml2);
 	}
-	html += '</p>';
-	recentKanjiEl.innerHTML = html;
+    
+    recentKanjiEl.appendChild(notInnerHtml);
 	
 	ajaxObserver.observe(foundKanjiEl, {childList: true});
 }
@@ -101,8 +119,7 @@ function refreshFoundKanji() {
 			recentKanjiIndexes[recentKanjiIndexes.length] = value;
 		}
 	}
-	
-	console.debug(recentKanjiIndexes)
+    
 	if(foundKanji.length == 0) {
 		// There are no found kanji, display unfiltered recent kanji
 		recentKanjiCount = recentKanji.length;
