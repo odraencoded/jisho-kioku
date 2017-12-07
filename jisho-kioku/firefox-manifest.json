@@ -3,6 +3,11 @@
   "manifest_version": 2,
   "version": "0.3.2",
   "description": "Remembers kanji looked up in Jisho.org and other stuff.",
+  "applications": {
+    "gecko": {
+      "id": "jishokioku@japanesewithanime.com"
+    }
+  },
   "icons": {
     "16": "icon16.png",
     "48": "icon48.png",
