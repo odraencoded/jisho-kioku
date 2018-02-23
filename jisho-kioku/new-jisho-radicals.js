@@ -113,6 +113,32 @@
             // Remove ' from filter.
             // Easy way to make kan'nyou and kannyou match かんにょう
             nameFilter = nameFilter.replace('\'', '');
+            nameFilter = nameFilter.trim();
+            
+            if(nameFilter.length > 0) {
+                function isLetter(text, idx) {
+                    var charCode = text.charCodeAt(idx);
+                    return (
+                        (charCode >= 65 && charCode <= 90)
+                        || (charCode >= 97 && charCode <= 122)
+                        || (charCode >= 65313 && charCode <= 65338)
+                        || (charCode >= 65345 && charCode <= 65370)
+                    )
+                }
+                
+                if(!isLetter(nameFilter, 0)) {
+                    // understands おｋ as just お
+                    // so while converting romaji to kana in the IME 
+                    // the filter doesn't clear all results
+                    for(var i = nameFilter.length - 1; i > 0; i--) {
+                        if(!isLetter(nameFilter, i)) {
+                            break;
+                        }
+                    }
+                    
+                    nameFilter = nameFilter.substring(0, i + 1);
+                }
+            }
         }
         
         // Stroke count part
@@ -184,11 +210,20 @@
         Because some people just type them wide.
     */
     function ConvertFullWithCharacters(str) {
-        var fullWidthRegex = /[１２３４５６７８９０＋＝]/g;
+        var fullWidthRegex = /[１２３４５６７８９０＋＝Ａ-Ｚａ-ｚ]/g;
         var charCodeOffset = '0'.charCodeAt(0) - '０'.charCodeAt(0);
+        var widthCharCodeOffset = 'b'.charCodeAt(0) - 'ｂ'.charCodeAt(0);
         
         str = str.replace(fullWidthRegex, function(match) {
-            return String.fromCharCode(match.charCodeAt(0) + charCodeOffset);
+            var charCode = match.charCodeAt(0);
+            if(charCode >= 65313 && charCode <= 65338) {
+                var newCharCode = charCode + widthCharCodeOffset;
+            } else if(charCode >= 65345 && charCode <= 65370) {
+                var newCharCode = charCode + widthCharCodeOffset;
+            } else {
+                var newCharCode = charCode + charCodeOffset;
+            }
+            return String.fromCharCode(newCharCode);
         });
         
         return str;
