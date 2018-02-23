@@ -24,8 +24,10 @@
     function refreshRecentQueries() {
         setupRecentQueries();
         
+        MAX_DATA_ENTRIES = 10
+        
         queriesDataList.innerHTML = '';
-        for(var i = 0; i < recentQueries.length; i++) {
+        for(var i = 0; i < recentQueries.length && i < MAX_DATA_ENTRIES; i++) {
             var rq = recentQueries[i];
             var newOption = document.createElement('option')
             newOption.setAttribute('value', rq);
