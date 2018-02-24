@@ -73,7 +73,7 @@ function createMenu() {
     
     var menuContainer = document.createElement('div');
     var topLink = document.createElement('a');
-    topLink.innerText = '記憶';
+    topLink.innerText = 'kioku';
     topLink.href = '#';
     menuContainer.appendChild(topLink);
     
