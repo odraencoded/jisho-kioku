@@ -138,6 +138,8 @@
         }
         
         ajaxObserver.observe(kanjiResultsEl, {childList: true});
+        
+        TellJishoTheResultsChangedSoTheHeightOfTheThingDoesntGoWeird();
     }
 
     function refreshFoundKanji() {

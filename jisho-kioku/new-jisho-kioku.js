@@ -1,5 +1,6 @@
 var SEARCH_URL = '/search/';
 var SEARCH_PREFIX = '/search';
+var jishoSearchForm = document.getElementById('search');
 
 var options = {
     recentKanjiCopy: true,
@@ -243,4 +244,11 @@ function createMenu() {
             bookmarksTabLoaded = true;
         }
     }
+}
+
+
+TellJishoTheResultsChangedSoTheHeightOfTheThingDoesntGoWeird = function() {
+    // help Jisho fix not screw up the radical area height
+    var resultsEvent = new CustomEvent('results_changed');
+    jishoSearchForm.dispatchEvent(resultsEvent);   
 }

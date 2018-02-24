@@ -1,6 +1,5 @@
 (function() {
     var radicalEls = document.querySelectorAll('[data-radical]');
-    var jishoSearchForm = document.querySelector('#search');
     var radicalFilterForm = null;
     var radicalFilterQueryKanjiEl = null;
     var radicalFilterInputEl = null;
@@ -535,11 +534,5 @@
         ApplyRadicalFilter(function() {
             return true;
         });
-    }
-    
-    function TellJishoTheResultsChangedSoTheHeightOfTheThingDoesntGoWeird() {
-        // help Jisho fix not screw up the radical area height
-        var resultsEvent = new CustomEvent('results_changed');
-        jishoSearchForm.dispatchEvent(resultsEvent);   
     }
 })();
