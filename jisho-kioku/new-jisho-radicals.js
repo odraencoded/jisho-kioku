@@ -92,7 +92,7 @@
     
     function createRadicalFilterForm() {
         radicalFilterForm = document.createElement('form');
-        radicalFilterForm.innerHTML = '<label>' +
+        radicalFilterForm.innerHTML = '<label id="radical-filter-label-container">' +
             '<span id="radical-filter-label">Filter radicals:</span> ' +
             '<input id="radical-filter" type="text">' +
         '</label><button type="button" id="radical-filter-query-kanji">Query Kanji</button>';
@@ -360,7 +360,7 @@
             var filter = RadicalFilterForSettings(inputFilterSettings);
             var result = ApplyRadicalFilter(filter);
             
-            if(result.totalShownRadicals == 0) {
+            if(!inputFilterSettings.kanjiRadicalsMode) {
                 var kanjiInNameFilter = inputFilterSettings.kanjiInNameFilter;
                 if(kanjiInNameFilter && kanjiInNameFilter.length >= 1) {
                     showQueryRadicals = true;
