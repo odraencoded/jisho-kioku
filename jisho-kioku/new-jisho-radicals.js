@@ -1,6 +1,15 @@
 (function() {
     var radicalEls = document.querySelectorAll('[data-radical]');
+    var jishoSearchForm = document.querySelector('#search');
     var radicalFilterForm = null;
+    var radicalFilterQueryKanjiEl = null;
+    var radicalFilterInputEl = null;
+    var firstRelevantRadical = null;
+    var queryRadicalsButtonShown = false;
+    var filteringByKanji = false;
+    var inputFilterSettings = null;
+    var activeKanjiRadicalsQueries = {};
+    var kanjiRadicalsCache = {};
     
     InitRadicalEnhacements = function() {
         assignRadicalNames();
@@ -9,18 +18,25 @@
         // reset when a radical is clicked
         for(var i = 0; i < radicalEls.length; i++) {
             radicalEls[i].addEventListener('click', function() {
-                // refocus
                 if(radicalFilterInputEl.value != '') {
+                    // refocus
                     radicalFilterInputEl.focus();
+                    
+                    var inputSettings = GetInputFilterSettings();
+                    if(inputSettings.kanjiRadicalsMode) {
+                        // do nothing
+                    } else {
+                        radicalFilterInputEl.value = '';
+                        RefreshRadicalFilterFromInput();
+                    }
                 }
-                radicalFilterInputEl.value = "";
-                ResetRadicalFilter();
-                
             });
         }
         
         // Cause the first radical to be "click"'d on when the filter form is submitted.
         radicalFilterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
             if(firstRelevantRadical !== null) {
                 var clickEvent = new MouseEvent('click', {
                     'view': window,
@@ -28,23 +44,30 @@
                     'cancelable': true
                 });
                 firstRelevantRadical.dispatchEvent(clickEvent);
+            } else if(queryRadicalsButtonShown) {
+                var clickEvent = new MouseEvent('click', {
+                    'view': window,
+                    'bubbles': true,
+                    'cancelable': true
+                });
+                radicalFilterQueryKanjiEl.dispatchEvent(clickEvent);
             }
             
-            e.preventDefault();
             return false;
         });
         
-        
-            
-        var radicalFilterInputEl = document.getElementById('radical-filter');
+        radicalFilterInputEl = document.getElementById('radical-filter');
         radicalFilterInputEl.addEventListener('input', function() {
-            if(radicalFilterInputEl.value === '') {
-                ResetRadicalFilter();
-            } else {
-                var filter = RadicalFilterForInput(radicalFilterInputEl.value)
-                ApplyRadicalFilter(filter);
-            }
+            RefreshRadicalFilterFromInput();
         });
+        
+        radicalFilterQueryKanjiEl = document.getElementById('radical-filter-query-kanji');
+        radicalFilterQueryKanjiEl.addEventListener('click', function() {
+            QueryKanjiRadicalsFromInput();
+        });
+        
+        setQueryRadicalsVisibility(false);
+        setQueryRadicalsState('normal');
     }
     
     function assignRadicalNames() {
@@ -65,23 +88,58 @@
         radicalFilterForm.innerHTML = '<label>' +
             '<span id="radical-filter-label">Filter radicals:</span> ' +
             '<input id="radical-filter" type="text">' +
-        '</label>';
+        '</label><button type="button" id="radical-filter-query-kanji">Query Kanji</button>';
         
         var radicalAreaEl = document.getElementById('radical_area');
         var resetRadicalsEl = document.querySelector('#radical_area .radical_table');
         radicalAreaEl.insertBefore(radicalFilterForm, resetRadicalsEl);
     }
 
-    function RadicalFilterForInput(input) {
-        // Populate katakana / romaji readings for radicals.
-        BuildRadicalsSynonymReadings();
+    function setQueryRadicalsVisibility(showQueryRadicals) {
+        queryRadicalsButtonShown = showQueryRadicals;
         
-        var input = ConvertFullWithCharacters(input);
+        if(queryRadicalsButtonShown) {
+            radicalFilterQueryKanjiEl.style.display = 'inline';
+        } else {
+            radicalFilterQueryKanjiEl.style.display = 'none';
+        }
+    }
+    
+    function setQueryRadicalsState(state) {
+        if(state == 'querying') {
+            radicalFilterQueryKanjiEl.innerText = 'Querying...';
+        } else if(state == 'error') {
+            radicalFilterQueryKanjiEl.innerText = 'Error!';
+        } else {
+            radicalFilterQueryKanjiEl.innerText = 'Query Kanji';
+        }
+    }
+    
+    function GetInputFilterSettings() {
+        if(!inputFilterSettings) {
+            var inputValue = radicalFilterInputEl.value;
+            inputFilterSettings = ParseFilterSettings(inputValue);
+        }
+            
+        return inputFilterSettings;
+    }
+    
+    function ParseFilterSettings(input) {
+        var result = {
+            nameFilter: null,
+            onlyAvailable: false,
+            selectedIndex: null,
+            selectedStrokeCount: null,
+            validRadicals: null,
+            kanjiRadicalsMode: false,
+        }
         
-        var nameFilter = null;
-        var onlyAvailable = false;
-        var selectedIndex = null;
-        var selectedStrokeCount = null;
+        input = input.trim();
+        if(input.length == 0) {
+            return result;
+        }
+        
+        input = ConvertFullWithCharacters(input);
         
         // Filter pattern examples
         // ひ
@@ -108,7 +166,7 @@
         
         // Name part
         if(matches[1]) {
-            nameFilter = matches[1];
+            var nameFilter = matches[1];
             
             // Remove ' from filter.
             // Easy way to make kan'nyou and kannyou match かんにょう
@@ -139,24 +197,50 @@
                     nameFilter = nameFilter.substring(0, i + 1);
                 }
             }
+            
+            result.nameFilter = nameFilter;
         }
         
         // Stroke count part
         if(matches[3]) {
-            selectedStrokeCount = parseInt(matches[3]);
+            result.selectedStrokeCount = parseInt(matches[3]);
         }
         
         // Available part
         if(matches[4]) {
-            onlyAvailable = true;
+            result.onlyAvailable = true;
         }
         
         // Index part
         if(matches[5]) {
-            selectedIndex = parseInt(matches[5]);
+            result.selectedIndex = parseInt(matches[5]);
         }
         
+        var cachedKanjiRadicals = GetKanjiRadicalsCached(result.nameFilter);
+        if(cachedKanjiRadicals) {
+            result.validRadicals = cachedKanjiRadicals;
+            result.kanjiRadicalsMode = true;
+        }
+        
+        return result;
+    }
+    
+    
+    function RadicalFilterForSettings(filterSettings) {
+        var nameFilter = filterSettings.nameFilter;
+        var onlyAvailable = filterSettings.onlyAvailable;
+        var selectedIndex = filterSettings.selectedIndex;
+        var selectedStrokeCount = filterSettings.selectedStrokeCount;
+        var validRadicals = filterSettings.validRadicals;
+        var kanjiRadicalsMode = filterSettings.kanjiRadicalsMode
+        
         return function(radicalId, status) {
+            if(validRadicals) {
+                if(validRadicals.indexOf(radicalId) == -1) {
+                    return false;
+                }
+            }
+            
             if(onlyAvailable && !status.available) {
                 return false;
             }
@@ -171,17 +255,22 @@
             }
             
             var passedNameFilter = false;
-            if(nameFilter === null) {
+            if(nameFilter === null || kanjiRadicalsMode) {
                 passedNameFilter = true;
             } else if(radicalData) {
-                for(var i = 0; i < radicalData.readings.length; i++) {
-                    var reading = radicalData.readings[i];
-                    if(reading.startsWith(nameFilter)) {
-                        passedNameFilter = true;
-                        break;
+                if(radicalData.jishoText == nameFilter) {
+                    passedNameFilter = true;
+                } else {
+                    for(var i = 0; i < radicalData.readings.length; i++) {
+                        var reading = radicalData.readings[i];
+                        if(reading.startsWith(nameFilter)) {
+                            passedNameFilter = true;
+                            break;
+                        }
                     }
                 }
             }
+            
             if(!passedNameFilter) {
                 return false;
             }
@@ -203,7 +292,17 @@
             return false;
         }
     }
-
+    
+    
+    function CloneFilterSettings(oldSettings) {
+        return {
+            nameFilter: oldSettings.nameFilter,
+            onlyAvailable: oldSettings.onlyAvailable,
+            selectedIndex: oldSettings.selectedIndex,
+            selectedStrokeCount: oldSettings.selectedStrokeCount,
+            validRadicals: oldSettings.validRadicals
+        }
+    };
     /*
         Converts full width numerals and math symbols to half width.
         
@@ -228,12 +327,56 @@
         
         return str;
     }
-
+    
+    
+    function RefreshRadicalFilterFromInput() {
+        var value = radicalFilterInputEl.value;
+        value = value.trim();
+        
+        var showQueryRadicals = false;
+        
+        inputFilterSettings = null;
+        
+        if(value === '') {
+            ResetRadicalFilter();
+            showQueryRadicals = false;
+        } else {
+            inputFilterSettings = GetInputFilterSettings();
+            var filter = RadicalFilterForSettings(inputFilterSettings);
+            var result = ApplyRadicalFilter(filter);
+            
+            if(result.totalShownRadicals == 0) {
+                var nameFilter = inputFilterSettings.nameFilter;
+                if(nameFilter.length == 1) {
+                    var charCode = nameFilter.charCodeAt(0);
+                    // dirty way to check if it's not a letter
+                    // magic numbers are full-width letters block boundaries
+                    if(charCode > 255 && !(charCode >= 65281 && charCode <= 65519)) {
+                        showQueryRadicals = true;
+                    }
+                }
+            }
+        }
+        
+        setQueryRadicalsVisibility(showQueryRadicals);
+        setQueryRadicalsState('normal');
+        
+        TellJishoTheResultsChangedSoTheHeightOfTheThingDoesntGoWeird();
+    }
+    
+    
     function ApplyRadicalFilter(filterCb) {
+        // Populate katakana / romaji readings for radicals.
+        BuildRadicalsSynonymReadings();
+        
         var radicalTableEl = document.querySelector('.radical_table');
         
         var numberEl = null;
         var numberGroupCount = 0;
+        
+        result = {
+            totalShownRadicals: 0,
+        }
         
         firstRelevantRadical = null;
         
@@ -273,6 +416,7 @@
                     }
                     el.style.display = 'block';
                     numberGroupCount += 1;
+                    result.totalShownRadicals += 1;
                 } else {
                     el.style.display = 'none';
                 }
@@ -286,11 +430,106 @@
                 numberEl.style.display = 'block';
             }
         }
+        
+        TellJishoTheResultsChangedSoTheHeightOfTheThingDoesntGoWeird();
+        
+        return result;
+    }
+    
+    function RememberKanjiRadicals(kanji, radicals) {
+        // NOTE: save it to local storage?
+        kanjiRadicalsCache[kanji] = radicals;
+    }
+    
+    function GetKanjiRadicalsCached(kanji) {
+        return kanjiRadicalsCache[kanji];
+    }
+    
+    function QueryKanjiRadicalsFromInput() {
+        var filterSettings = GetInputFilterSettings();
+        var kanji = filterSettings.nameFilter;
+        if(IsQueryingKanji(kanji)) {
+            return;
+        }
+        
+        setQueryRadicalsState('querying');
+        
+        FetchKanjiRadicals(kanji, function(kanjiRadicals) {
+            RememberKanjiRadicals(kanji, kanjiRadicals);
+            
+            var currentFilterSettings = GetInputFilterSettings();
+            if(currentFilterSettings.nameFilter != kanji) {
+                // changed during async, abort.
+                return;
+            }
+            
+            RefreshRadicalFilterFromInput();
+            
+        });
+    }
+    
+    function IsQueryingKanji(kanji) {
+        return !!activeKanjiRadicalsQueries[kanji];
+    }
+    
+    function FetchKanjiRadicals(kanji, cb) {
+        FetchKanjiRadicalsByHtml(kanji, cb);
+    }
+    
+    /* Replace when (if) Jisho gets an API to query radicals. */
+    function FetchKanjiRadicalsByHtml(kanji, cb) {
+        activeKanjiRadicalsQueries[kanji] = true;
+        
+        var url = '/search/' + kanji + ' %20%23kanji';
+        
+        var req = new XMLHttpRequest();
+        req.onreadystatechange = function () {
+            activeKanjiRadicalsQueries[kanji] = false;
+            /* complete */
+            if (req.readyState == XMLHttpRequest.DONE) {
+                parser = new DOMParser();
+                var resp = parser.parseFromString(req.responseText, "text/html");
+                var radicalBlocks = resp.querySelectorAll(".kanji.details .radicals");
+                
+                // how to get radicals without markup:
+                // step 1: get stuff as text 'cause the markup doesn't help anyway
+                // step 2: separate the words, remove useless punctuation
+                // step 3: BRUTE FORCE ALL THE WAY THROUGH!!!111111
+                // step 3a: by which I mean checking them against a table, obviously
+                var radicalBlockText = [];
+                for(var i = 0; i < radicalBlocks.length; i++) {
+                    radicalBlockText.push(radicalBlocks[i].innerText);
+                }
+                var radicalText = radicalBlockText.join(' ');
+                var radicalText = radicalText.replace(/[\(\)\[\],:.]/g, ' ')
+                var radicalWords = radicalText.split(/\s+/);
+                
+                var radicalIds = [];
+                for(var i = 0; i < radicalWords.length; i++) {
+                    var w = radicalWords[i];
+                    var rad = RadicalMap[w];
+                    if(rad) {
+                        radicalIds.push(rad.jishoId);
+                    }
+                }
+                
+                cb(radicalIds);
+            }
+        };
+        
+        req.open("GET", url, true);
+        req.send();
     }
 
     function ResetRadicalFilter() {
         ApplyRadicalFilter(function() {
             return true;
         });
+    }
+    
+    function TellJishoTheResultsChangedSoTheHeightOfTheThingDoesntGoWeird() {
+        // help Jisho fix not screw up the radical area height
+        var resultsEvent = new CustomEvent('results_changed');
+        jishoSearchForm.dispatchEvent(resultsEvent);   
     }
 })();
