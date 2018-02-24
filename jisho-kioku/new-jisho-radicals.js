@@ -132,6 +132,7 @@
             selectedStrokeCount: null,
             validRadicals: null,
             kanjiRadicalsMode: false,
+            kanjiInNameFilter: null
         }
         
         input = input.trim();
@@ -216,7 +217,14 @@
             result.selectedIndex = parseInt(matches[5]);
         }
         
-        var cachedKanjiRadicals = GetKanjiRadicalsCached(result.nameFilter);
+        if(result.nameFilter) {
+            // strips ASCII + katakana + hiragana blocks.
+            result.kanjiInNameFilter = result.nameFilter.replace(
+                /[\u0000-\u00FF\uFF00-\uFFEF\u30A0-\u30FF\u3040-\u309F]/g, ''
+            );
+        }
+        
+        var cachedKanjiRadicals = GetKanjiRadicalsCached(result.kanjiInNameFilter);
         if(cachedKanjiRadicals) {
             result.validRadicals = cachedKanjiRadicals;
             result.kanjiRadicalsMode = true;
@@ -346,14 +354,9 @@
             var result = ApplyRadicalFilter(filter);
             
             if(result.totalShownRadicals == 0) {
-                var nameFilter = inputFilterSettings.nameFilter;
-                if(nameFilter.length == 1) {
-                    var charCode = nameFilter.charCodeAt(0);
-                    // dirty way to check if it's not a letter
-                    // magic numbers are full-width letters block boundaries
-                    if(charCode > 255 && !(charCode >= 65281 && charCode <= 65519)) {
-                        showQueryRadicals = true;
-                    }
+                var kanjiInNameFilter = inputFilterSettings.kanjiInNameFilter;
+                if(kanjiInNameFilter && kanjiInNameFilter.length >= 1) {
+                    showQueryRadicals = true;
                 }
             }
         }
@@ -447,8 +450,8 @@
     
     function QueryKanjiRadicalsFromInput() {
         var filterSettings = GetInputFilterSettings();
-        var kanji = filterSettings.nameFilter;
-        if(IsQueryingKanji(kanji)) {
+        var kanji = filterSettings.kanjiInNameFilter;
+        if(!kanji || IsQueryingKanji(kanji)) {
             return;
         }
         
@@ -458,7 +461,7 @@
             RememberKanjiRadicals(kanji, kanjiRadicals);
             
             var currentFilterSettings = GetInputFilterSettings();
-            if(currentFilterSettings.nameFilter != kanji) {
+            if(currentFilterSettings.kanjiInNameFilter != kanji) {
                 // changed during async, abort.
                 return;
             }
