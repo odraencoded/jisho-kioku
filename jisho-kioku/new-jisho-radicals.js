@@ -75,8 +75,15 @@
             var radicalEl = radicalEls[i];
             var radicalId = radicalEl.getAttribute('data-radical');
             var radicalData = RadicalTable[radicalId];
+            var radicalName = null;
             if(radicalData) {
-                radicalEl.setAttribute('title', 'Name: ' + radicalData.readings[0]);
+                radicalName = radicalData.readings[0];
+            } else {
+                console.warn('Missing radical data. ID: ' + radicalId)
+            }
+            
+            if(radicalName) {
+                radicalEl.setAttribute('title', 'Name: ' + radicalName);
             } else {
                 radicalEl.setAttribute('title', 'Name: ?');
             }

@@ -4,10 +4,17 @@
     This list is incomplete, some radicals/readings might be missing.
 **/
 
-function Radical(jishoText, readings, strokes, positions) {
-    this.jishoText = jishoText;
+function Radical(jishoRadk, readings, strokes, positions) {
+    if(jishoRadk instanceof Array) {
+        this.jishoText = jishoRadk[0];
+        this.jishoRadk= jishoRadk[1];
+    } else {
+        this.jishoText = jishoRadk;
+        this.jishoRadk = jishoRadk;
+    }
+    
     this.jishoId = null;
-    this.readings = readings;
+    this.readings = readings || [];
     this.positions = positions;
     this.strokes = strokes;
 }
@@ -28,19 +35,19 @@ RadicalTable = {
       '7': /* 二 */ new Radical('二', ['に'], 2, [null]),
       '8': /* 亠 */ new Radical('亠', ['なべぶた'], 2, ['kanmuri']),
       '9': /* 人 */ new Radical('人', ['ひと'], 2, [null]),
-     '10': /* ⺅ - 化 */ new Radical('⺅', ['にんべん'], 2, ['hen']),
-     '11': /* 𠆢 - 个 */ new Radical('𠆢', ['ひとやね'], 2, ['kanmuri']),
+     '10': /* ⺅ - 化 */ new Radical(['⺅', '化'], ['にんべん'], 2, ['hen']),
+     '11': /* 𠆢 - 个 */ new Radical(['𠆢', '个'], ['ひとやね'], 2, ['kanmuri']),
      '12': /* 儿 */ new Radical('儿', ['ひとあし', 'にんにょう'], 2, ['ashi']),
      '13': /* 入 */ new Radical('入', ['いる'], 2, [null]),
      '14': /* ハ */ new Radical('ハ', ['はち'], 2, [null]),
-     '15': /* 丷 - 半 */ new Radical('丷', ['はちがしら'], 2, [null]),
+     '15': /* 丷 - 半 */ new Radical(['丷', '并'], ['はちがしら'], 2, [null]),
      '16': /* 冂 */ new Radical('冂', ['けいがまえ'], 2, ['keigamae']),
      '17': /* 冖 */ new Radical('冖', ['わかんむり'], 2, ['kanmuri']),
      '18': /* 冫 */ new Radical('冫', ['にすい'], 2, ['hen']),
      '19': /* 几 */ new Radical('几', ['きにょう', 'つくえ'], 2, ['tsukuri']),
      '20': /* 凵 */ new Radical('凵', ['かんにょう'], 2, ['nyou']),
      '21': /* 刀 */ new Radical('刀', ['かたな'], 2, [null]),
-     '22': /* ⺉ - 刈 */ new Radical('⺉', ['りっとう'], 2, ['tsukuri']),
+     '22': /* ⺉ - 刈 */ new Radical(['⺉', '刈'], ['りっとう'], 2, ['tsukuri']),
      '23': /* 力 */ new Radical('力', ['ちから'], 2, [null]),
      '24': /* 勹 */ new Radical('勹', ['つつみがまえ'], 2, ['tsutsumigamae']),
      '25': /* 匕 */ new Radical('匕', ['さじ'], 2, ['tsukuri']),
@@ -51,10 +58,16 @@ RadicalTable = {
      '30': /* 厂 */ new Radical('厂', ['がんだれ'], 2, ['tare']),
      '31': /* 厶 */ new Radical('厶', ['む'], 2, [null]),
      '32': /* 又 */ new Radical('又', ['また'], 2, [null]),
-    /* Missing 33 to 36 */
+     
+    /* Missing official names: 33 to 36, 360 */
+     '33': /* マ */ new Radical('マ', ['ま'], 2, undefined),
+     '34': /* 九 */ new Radical('九', ['きゅう'], 2, undefined),
+     '35': /* ユ */ new Radical('ユ', ['ゆ'], 2, undefined),
+     '36': /* 乃 */ new Radical('乃', undefined, 2, undefined),
+     '360': /* 𠂉 */ new Radical(['𠂉', '乞'], undefined, 2, undefined),
     /* 3 strokes */
     
-     '37': /* ⻌ */ new Radical('⻌', ['しんにょう'], 3, ['nyou']),
+     '37': /* ⻌ */ new Radical(['⻌', '込'], ['しんにょう'], 3, ['nyou']),
      '38': /* 口 */ new Radical('口', ['くち'], 3, [null]),
      '39': /* 囗 */ new Radical('囗', ['くにがまえ'], 3, ['kunigamae']),
      '40': /* 土 */ new Radical('土', ['つち'], 3, [null]),
@@ -67,7 +80,7 @@ RadicalTable = {
      '47': /* 宀 */ new Radical('宀', ['うかんむり'], 3, ['kanmuri']),
      '48': /* 寸 */ new Radical('寸', ['すん', 'すんづくり'], 3, [null, 'tsukuri']),
      '49': /* 小 */ new Radical('小', ['しょう', 'ちいさい'], 3, [null]),
-     '50': /* ⺌ */ new Radical('⺌', ['しょうかんむり'], 3, ['kanmuri']),
+     '50': /* ⺌ */ new Radical(['⺌', '尚'], ['しょうかんむり'], 3, ['kanmuri']),
      '51': /* 尢 */ new Radical('尢', ['だいのまげあし', 'まげあし'], 3, ['tsukuri']),
      '52': /* 尸 */ new Radical('尸', ['しかばね'], 3, ['tare']),
      '53': /* 屮 */ new Radical('屮', ['くさのめ'], 3, [null]),
@@ -88,17 +101,22 @@ RadicalTable = {
      '68': /* 彑 */ new Radical('彑', ['けいがしら'], 3, [null]),
      '69': /* 彡 */ new Radical('彡', ['さんづくり'], 3, ['tsukuri']),
      '70': /* 彳 */ new Radical('彳', ['ぎょうにんべん'], 3, ['hen']),
-     '71': /* ⺖ - 忙 */ new Radical('⺖', ['りっしんべん'], 3, ['hen']),
-     '72': /* ⺘ - 扎 */ new Radical('⺘', ['てへん'], 3, ['hen']),
-     '73': /* ⺡ - 氾 */ new Radical('⺡', ['さんずい'], 3, ['hen']),
-     '74': /* ⺨ - 氾 */ new Radical('⺨', ['けものへん'], 3, ['hen']),
-     '75': /* ⺾ */ new Radical('⺾', ['くさかんむり'], 3, ['kanmuri']),
-     '76': /* ⻏ */ new Radical('⻏', ['おおざと'], 3, ['tsukuri']),
-     '77': /* ⻖ */ new Radical('⻖', ['こざとへん'], 3, ['hen']),
-    /* Missing 78 to 81 */
+     '71': /* ⺖ - 忙 */ new Radical(['⺖', '忙'], ['りっしんべん'], 3, ['hen']),
+     '72': /* ⺘ - 扎 */ new Radical(['⺘', '扎'], ['てへん'], 3, ['hen']),
+     '73': /* ⺡ - 汁 */ new Radical(['⺡', '汁'], ['さんずい'], 3, ['hen']),
+     '74': /* ⺨ - 犯 */ new Radical(['⺨', '犯'], ['けものへん'], 3, ['hen']),
+     '75': /* ⺾ */ new Radical(['⺾', '艾'], ['くさかんむり'], 3, ['kanmuri']),
+     '76': /* ⻏ */ new Radical(['⻏', '邦'], ['おおざと'], 3, ['tsukuri']),
+     '77': /* ⻖ */ new Radical(['⻖', '阡'], ['こざとへん'], 3, ['hen']),
+    
+    /* Missing official names: 78 to 81 */
+     '78': /* 也 */ new Radical(['也'], undefined, 3, undefined),
+     '79': /* 亡 */ new Radical(['亡'], undefined, 3, undefined),
+     '80': /* 及 */ new Radical(['及'], undefined, 3, undefined),
+     '81': /* 久 */ new Radical(['久'], undefined, 3, undefined),
     /* 4 strokes */
     
-     '82': /* ⺹ - 考 */ new Radical('⺹', ['おいかんむり'], 4, ['kanmuri']),
+     '82': /* ⺹ - 考 */ new Radical(['⺹', '老'], ['おいかんむり'], 4, ['kanmuri']),
      '83': /* 心 */ new Radical('心', ['こころ'], 4, [null]),
      '84': /* 戈 */ new Radical('戈', ['ほこ'], 4, [null]),
      '85': /* 戸 */ new Radical('戸', ['と', 'とだれ'], 4, [null, 'tare']),
@@ -124,7 +142,7 @@ RadicalTable = {
     '105': /* 气 */ new Radical('气', ['きがまえ'], 4, ['kigamae']),
     '106': /* 水 */ new Radical('水', ['みず'], 4, [null]),
     '107': /* 火 */ new Radical('火', ['ひ', 'ひへん'], 4, [null, 'hen']),
-    '108': /* 杰 */ new Radical('⺣', ['れっか'], 4, ['ashi']),
+    '108': /* 杰 */ new Radical(['⺣', '杰'], ['れっか'], 4, ['ashi']),
     '109': /* 爪 */ new Radical('爪', ['つめ', 'つめかんむり'], 4, [null, 'kanmuri']),
     
     '110': /* 父 */ new Radical('父', ['ちち'], 4, [null]),
@@ -133,9 +151,17 @@ RadicalTable = {
     '113': /* 片 */ new Radical('片', ['かた', 'かたへん'], 4, [null, 'hen']),
     '114': /* 牛 */ new Radical('牛', ['うし', 'うしへん'], 4, [null, 'hen']),
     '115': /* 犬 */ new Radical('犬', ['いぬ'], 4, [null]),
-    '116': /* ⺭ - 礼 */ new Radical('⺭', ['しめすへん'], 4, ['hen']),
+    '116': /* ⺭ - 礼 */ new Radical(['⺭', '礼'], ['しめすへん'], 4, ['hen']),
     '117': /* 王 */ new Radical('王', ['おう', 'おうへん'], 4, [null, 'hen']),
-    /* Missing 118 to 124 */
+    /* Missing official names: 118 to 124 */
+    '118': /* 元 */ new Radical('元', undefined, 4, undefined),
+    '119': /* 井 */ new Radical('井', undefined, 4, undefined),
+    '120': /* 勿 */ new Radical('勿', undefined, 4, undefined),
+    '121': /* 尤 */ new Radical('尤', undefined, 4, undefined),
+    '122': /* 五 */ new Radical('五', undefined, 4, undefined),
+    '123': /* 屯 */ new Radical('屯', undefined, 4, undefined),
+    '124': /* 巴 */ new Radical('巴', undefined, 4, undefined),
+    
     '125': /* 毋 */ new Radical('毋', ['なかれ'], 4, [null]),
     
     /* 5 strokes */
@@ -146,7 +172,7 @@ RadicalTable = {
     '130': /* 用 */ new Radical('用', ['もちいる'], 5, [null]),
     '131': /* 田 */ new Radical('田', ['た', 'たへん'], 5, [null, 'hen']),
     '132': /* 疋 */ new Radical('疋', ['ひき', 'ひきへん'], 5, [null, 'hen']),
-    '133': /* 疒 */ new Radical('疒', ['やまいだれ'], 5, ['tare']),
+    '133': /* 疒 */ new Radical(['疒', '疔'], ['やまいだれ'], 5, ['tare']),
     '134': /* 癶 */ new Radical('癶', ['はつがしら'], 5, ['kanmuri']),
     '135': /* 白 */ new Radical('白', ['しろ', 'はくへん'], 5, [null, 'hen']),
     '136': /* 皮 */ new Radical('皮', ['けがわ'], 5, [null]),
@@ -156,13 +182,18 @@ RadicalTable = {
     '140': /* 矢 */ new Radical('矢', ['や', 'やへん'], 5, [null, 'hen']),
     '141': /* 石 */ new Radical('石', ['いし', 'いしへん'], 5, [null, 'hen']),
     '142': /* 示 */ new Radical('示', ['しめす'], 5, [null]),
-    '143': /* 禸 */ new Radical('禸', ['じゅうのあし'], 5, [null]),
+    '143': /* 禸 */ new Radical(['禸', '禹'], ['じゅうのあし'], 5, [null]),
     '144': /* 禾 */ new Radical('禾', ['のぎへん'], 5, ['hen']),
     '145': /* 穴 */ new Radical('穴', ['あな'], 5, [null]),
     '146': /* 立 */ new Radical('立', ['たつ', 'たつへん'], 5, [null, 'hen']),
-    '147': /* ⻂ - 初 */ new Radical('⻂', ['ころもへん'], 5, ['hen']),
-    /* Missing 148 to 151 */
-    '152': /* ⺲ - 罒 */ new Radical('⺲', ['あみがしら', 'よこめ'], 5, ['kanmuri']),
+    '147': /* ⻂ - 初 */ new Radical(['⻂', '初'], ['ころもへん'], 5, ['hen']),
+    /* Missing official names: 148 to 151 */
+    '148': /* 世 */ new Radical(['世'], undefined, 5, undefined),
+    '149': /* 巨 */ new Radical(['巨'], undefined, 5, undefined),
+    '150': /* 冊 */ new Radical(['冊'], undefined, 5, undefined),
+    '151': /* 母 */ new Radical(['母'], ['はは'], 5, undefined),
+    
+    '152': /* ⺲ - 罒 */ new Radical(['⺲', '買'], ['あみがしら', 'よこめ'], 5, ['kanmuri']),
     '153': /* 牙 */ new Radical('牙', ['きば', 'きばへん'], 5, [null, 'hen']),
     
     /* 6 Strokes */
@@ -224,7 +255,11 @@ RadicalTable = {
     '205': /* 雨 */ new Radical('雨', ['あめ', 'あめかんむり'], 8, [null, 'kanmuri']),
     '206': /* 青 */ new Radical('青', ['あお'], 8, [null]),
     '207': /* 非 */ new Radical('非', ['あらず'], 8, [null]),
-    /* Missing 208 to 210 */
+    /* Missing official names: 208 to 210 */
+    '208': /* 奄 */ new Radical('奄', undefined, 8, undefined),
+    '209': /* 岡 */ new Radical('岡', undefined, 8, undefined),
+    '210': /* 免 */ new Radical('免', undefined, 8, undefined),
+    
     '211': /* 斉 */ new Radical('斉', ['せい'], 8, [null]),
     
     /* 9 strokes */
@@ -238,7 +273,8 @@ RadicalTable = {
     '219': /* 食 */ new Radical('食', ['しょく', 'しょくへん'], 9, [null, 'hen']),
     '220': /* 首 */ new Radical('首', ['くび'], 9, [null]),
     '221': /* 香 */ new Radical('香', ['かおり'], 9, [null]),
-    /* Missing 222 */
+    /* Missing official name: 222 */
+    '222': /* 品 */ new Radical('品', ['ひん', 'しな'], 9, undefined),
     
     /* 10 strokes */
     '223': /* 馬 */ new Radical('馬', ['うま', 'うまへん'], 10, [null, 'hen']),
@@ -249,7 +285,9 @@ RadicalTable = {
     '228': /* 鬯 */ new Radical('鬯', ['においざけ'], 10, [null]),
     '229': /* 鬲 */ new Radical('鬲', ['れき'], 10, [null]),
     '230': /* 鬼 */ new Radical('鬼', ['おに'], 10, [null]),
-    /* Missing 231 */
+    /* Missing official name: 231 */
+    '231': /* 竜 */ new Radical('竜', ['りゅう'], 10, undefined),
+    
     '232': /* 韋 */ new Radical('韋', ['なめしがわ'], 10, [null]),
     
     /* 11 strokes */
@@ -259,14 +297,18 @@ RadicalTable = {
     '236': /* 鹿 */ new Radical('鹿', ['しか'], 11, [null]),
     '237': /* 麻 */ new Radical('麻', ['あさ', 'あさかんむり'], 11, [null, 'kanmuri']),
     '238': /* 亀 */ new Radical('亀', ['かめ'], 11, [null]),
-    /* Missing 239 */
+    /* Missing official data: 239 */
+    '239': /* 亀 */ new Radical(['啇', '滴'], [], 11, []),
+    
     '240': /* 黄 */ new Radical('黄', ['き'], 11, [null]),
     '241': /* 黒 */ new Radical('黒', ['くろ'], 11, [null]),
     
     /* 12 strokes */
     '242': /* 黍 */ new Radical('黍', ['き'], 12, [null]),
     '243': /* 黹 */ new Radical('黹', ['ぬいとり'], 12, [null]),
-    /* Missing 244  */
+    /* Missing official name: 244  */
+    '244': /* 無 */ new Radical('無', ['む'], 12, undefined),
+    
     '245': /* 歯 */ new Radical('歯', ['は'], 12, [null]),
     
     /* 13 strokes */
@@ -300,6 +342,11 @@ function BuildRadicalsSynonymReadings() {
     
     for(radicalId in RadicalTable) {
         var radical = RadicalTable[radicalId];
+        
+        RadicalMap[radical.jishoText] = radical;
+        RadicalMap[radical.jishoRadk] = radical;
+        radical.jishoId = radicalId;
+        
         var originalReadingsCount = radical.readings.length;
         
         for(var i = 0; i < originalReadingsCount; i++) {
@@ -310,9 +357,6 @@ function BuildRadicalsSynonymReadings() {
             var romaji = GetRomajiForHiragana(hiragana)
             radical.readings.push(romaji);
         }
-        
-        RadicalMap[radical.jishoText] = radical;
-        radical.jishoId = radicalId
     }
     
     synonymReadingsBuilt = true;
