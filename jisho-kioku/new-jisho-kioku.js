@@ -111,6 +111,7 @@ function createMenu() {
         
         var bookmarksLink = document.createElement('a');
         var searchesLink = document.createElement('a');
+        var guideLink = document.createElement('a');
         
         searchesLink.innerText = 'Searches';
         searchesLink.href = '#';
@@ -119,6 +120,11 @@ function createMenu() {
         bookmarksLink.innerText = 'Bookmarks';
         bookmarksLink.href = '#';
         submenu.appendChild(bookmarksLink);
+        
+        guideLink.innerText = 'Tutorial';
+        guideLink.href = 'http://www.japanesewithanime.com/jisho-kioku';
+        guideLink.target = '_blank';
+        submenu.appendChild(guideLink);
         
         // Create tabs
         searchesDiv = document.createElement('div');
