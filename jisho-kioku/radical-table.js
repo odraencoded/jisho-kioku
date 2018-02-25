@@ -25,9 +25,9 @@ function Radical(jishoRadk, readings, strokes, positions) {
 RadicalTable = {
     /* 1 stroke */
       '1': /* 一 */ new Radical('一', ['いち'], 1, [null]),
-      '2': /* 丨 */ new Radical('丨', ['たてぼう'], 1, [null]),
+      '2': /* ｜ */ new Radical(['｜'], ['たてぼう'], 1, [null]),
       '3': /* 丶 */ new Radical('丶', ['てん'], 1, [null]),
-      '4': /* 丿 */ new Radical('丿', ['の'], 1, [null]),
+      '4': /* ノ */ new Radical(['ノ'], ['の'], 1, [null]),
       '5': /* 乙 */ new Radical('乙', ['おつ'], 1, [null]),
       '6': /* 亅 */ new Radical('亅', ['はねぼう'], 1, [null]),
     

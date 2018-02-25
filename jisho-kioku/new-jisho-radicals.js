@@ -77,6 +77,13 @@
             var radicalName = null;
             if(radicalData) {
                 radicalName = radicalData.readings[0];
+                if(radicalData.jishoText != radicalEl.innerText.trim()) {
+                    console.warn('Radical data doesn\'t match text. ID: ' + radicalId)
+                }
+                var dataRadk = radicalEl.getAttribute('data-radk');
+                if(dataRadk && radicalData.jishoRadk != dataRadk) {
+                    console.warn('Radical data doesn\'t match radk. ID: ' + radicalId)
+                }
             } else {
                 console.warn('Missing radical data. ID: ' + radicalId)
             }
