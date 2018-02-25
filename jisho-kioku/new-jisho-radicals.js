@@ -496,7 +496,9 @@
     function FetchKanjiRadicalsByHtml(kanji, cb) {
         activeKanjiRadicalsQueries[kanji] = true;
         
-        var url = '/search/' + kanji + ' %20%23kanji';
+        // Because firefox no likey it without the website
+        var website = window.location.protocol + '//' + window.location.hostname;
+        var url = website + '/search/' + kanji + ' %20%23kanji';
         
         var req = new XMLHttpRequest();
         req.onreadystatechange = function () {
