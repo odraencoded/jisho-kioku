@@ -7,18 +7,16 @@ See manual/features/instructions at [Japanese with Anime](http://www.japanesewit
 
 ## Addon pages
 
-https://chrome.google.com/webstore/detail/jisho-kioku/icnpljpaddnphinehahcfincggpgcadb
-https://addons.mozilla.org/en-US/firefox/addon/jisho-kioku/
+* Chrome: https://chrome.google.com/webstore/detail/jisho-kioku/icnpljpaddnphinehahcfincggpgcadb
+* Firefox: https://addons.mozilla.org/en-US/firefox/addon/jisho-kioku/
 
 ## In action
-
-(old footage, see link above for current screenshots)
 
 [Video demonstration in Chrome](https://www.youtube.com/watch?v=Hh8nVoisEHE)
 
 [![Video Demonstration](http://img.youtube.com/vi/Hh8nVoisEHE/0.jpg)](https://www.youtube.com/watch?v=Hh8nVoisEHE)
 
-Screenshot in Opera
+(Old) Screenshot in Opera
 
 ![Screenshot](http://i.imgur.com/YVn8HzB.png)
 
