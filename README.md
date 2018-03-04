@@ -7,15 +7,16 @@ See manual/features/instructions at [Japanese with Anime](http://www.japanesewit
 
 ## Addon pages
 
+https://chrome.google.com/webstore/detail/jisho-kioku/icnpljpaddnphinehahcfincggpgcadb
 https://addons.mozilla.org/en-US/firefox/addon/jisho-kioku/
 
 ## In action
 
 (old footage, see link above for current screenshots)
 
-[Video demonstration in Chrome](https://youtu.be/72nJWn-xQ7o)
+[Video demonstration in Chrome](https://www.youtube.com/watch?v=Hh8nVoisEHE)
 
-[![Video Demonstration](http://img.youtube.com/vi/72nJWn-xQ7o/0.jpg)](https://youtu.be/72nJWn-xQ7o)
+[![Video Demonstration](http://img.youtube.com/vi/Hh8nVoisEHE/0.jpg)](https://www.youtube.com/watch?v=Hh8nVoisEHE)
 
 Screenshot in Opera
 
@@ -25,6 +26,12 @@ It's the green stuff.
 
 
 ## Install Instructions
+
+### Chrome
+
+1. Go to [Jisho Kioku Chrome extension page](https://chrome.google.com/webstore/detail/jisho-kioku/icnpljpaddnphinehahcfincggpgcadb)
+3. Click Add to Chrome
+4. ばんざい！
 
 ### Firefox
 
